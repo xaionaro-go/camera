@@ -2,8 +2,6 @@ github.com/blackjack/webcam v0.6.1 h1:K0T6Q0zto23U99gNAa5q/hFoye6uGcKr2aE6hFoxVo
 github.com/blackjack/webcam v0.6.1/go.mod h1:zs+RkUZzqpFPHPiwBZ6U5B34ZXXe9i+SiHLKnnukJuI=
 github.com/mattn/go-mjpeg v0.0.3 h1:0G/+KddrbI5Hnq83B11O1O4vP7Q6L9MsBu6aW71jhUM=
 github.com/mattn/go-mjpeg v0.0.3/go.mod h1:65z7Cj+u5y5K3B8Sy5NtrJFTWAhguGHs9FEkADdx6kE=
-github.com/shethchintan7/yuv v0.0.0-20161016072504-e4f8dc71fb3e h1:BuHYEYevf8TdH0ToPTJXYqHdPmmeSIkU7qptMeWlrTg=
-github.com/shethchintan7/yuv v0.0.0-20161016072504-e4f8dc71fb3e/go.mod h1:h6NMW/hkS85mBMaRyZHuLreXCWE6JNIO9GPyS0qLytk=
 github.com/spf13/pflag v1.0.5 h1:iy+VFUOCP1a+8yFto/drg2CJ5u0yRoB7fZw3DKv/JXA=
 github.com/spf13/pflag v1.0.5/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=
 golang.org/x/sys v0.14.0 h1:Vz7Qs629MkJkGyHxUlRHizWJRG2j8fbQKjELVSNhy7Q=

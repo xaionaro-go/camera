@@ -91,12 +91,16 @@ func main() {
 		log.Printf("available formats for FPS %f:\n%s", *fpsFlag, buf.Bytes())
 	}
 
+	if len(formats) == 0 {
+		panic("no appropriate formats available")
+	}
+
 	format := formats.BestResolution()
 	frameDecoder, err := camera.NewFrameDecoder(format)
 	if err != nil {
 		panic(fmt.Errorf("unable to initialize a frame decoder: %w", err))
 	}
-	img := frameDecoder.AllocateImage()
+	img := frameDecoder.NewImage()
 
 	log.Printf("requesting format %#+v", format)
 	camera, err := cameraSelector.OpenCamera(format)
@@ -117,19 +121,19 @@ func main() {
 	defer cancelFn()
 
 	log.Printf("getting a frame")
-	_, frameID, err := camera.GetRawFrames(frameReadCtx, nil)
+	frame, frameID, err := camera.GetRawFrames(frameReadCtx, nil)
 	if err != nil {
 		panic(fmt.Errorf("unable to get a video frame: %w", err))
 	}
 
 	log.Printf("releasing the memory buffer of the frame")
-	err = camera.ReleaseFrames(frameID)
+	err = camera.ReleaseRawFrames(frameID)
 	if err != nil {
 		panic(fmt.Errorf("unable to release frame %d: %w", frameID, err))
 	}
 
 	log.Printf("getting the second frame")
-	frame, frameID, err := camera.GetRawFrames(frameReadCtx, nil)
+	frame, frameID, err = camera.GetRawFrames(frameReadCtx, nil)
 	if err != nil {
 		panic(fmt.Errorf("unable to get a video frame: %w", err))
 	}
@@ -146,7 +150,7 @@ func main() {
 	}
 
 	log.Printf("releasing the memory buffer of the frame")
-	err = camera.ReleaseFrames(frameID)
+	err = camera.ReleaseRawFrames(frameID)
 	if err != nil {
 		panic(fmt.Errorf("unable to release frame %d: %w", frameID, err))
 	}

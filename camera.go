@@ -5,13 +5,11 @@ import (
 	"io"
 )
 
-type FrameID int
-
 type Camera interface {
 	io.Closer
 	StartStreaming() error
 	StopStreaming() error
 	GetFormat() Format
-	GetRawFrames(context.Context, []byte) ([]byte, FrameID, error)
-	ReleaseFrames(FrameID) error
+	GetRawFrames(context.Context, []byte) (RawFrames, FrameID, error)
+	ReleaseRawFrames(FrameID) error
 }

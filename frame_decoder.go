@@ -8,7 +8,7 @@ import (
 
 type FrameDecoder interface {
 	io.Closer
-	AllocateImage() image.Image
+	NewImage() image.Image
 	WriteFrames([]byte) error
 	DecodeFrame(image.Image) (image.Image, error)
 }

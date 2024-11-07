@@ -29,7 +29,7 @@ func (d *frameDecoderMJPEG) Close() error {
 	return d.FrameWriter.Close()
 }
 
-func (d *frameDecoderMJPEG) AllocateImage() image.Image {
+func (d *frameDecoderMJPEG) NewImage() image.Image {
 	return nil
 }
 

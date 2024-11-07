@@ -30,7 +30,7 @@ func (d *frameDecoderRaw) Close() error {
 	return nil
 }
 
-func (d *frameDecoderRaw) AllocateImage() image.Image {
+func (d *frameDecoderRaw) NewImage() image.Image {
 	size := image.Rectangle{
 		Min: image.Point{},
 		Max: image.Point{
