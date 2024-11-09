@@ -40,35 +40,37 @@ func (c *Camera) GetFormat() camera.Format {
 	}
 }
 
-func (c *Camera) GetRawFrames(
+func (c *Camera) GetFrames(
 	ctx context.Context,
-	_ []byte,
-) (camera.RawFrames, camera.FrameID, error) {
+) (camera.FramesData, error) {
 	for tryCount := 0; tryCount < 10*int(c.FPS.Float64()); tryCount++ {
 		if err := c.WaitForFrame(ctx); err != nil {
-			return nil, nil, fmt.Errorf("unable to wait for a frame: %w", err)
+			return nil, fmt.Errorf("unable to wait for a frame: %w", err)
 		}
 
 		b, frameID, err := c.Camera.GetFrame()
 		if err != nil {
-			return nil, nil, fmt.Errorf("unable to read a frame: %w", err)
+			return nil, fmt.Errorf("unable to read a frame: %w", err)
 		}
 
 		if len(b) != 0 {
-			return b, FrameID(frameID), nil
+			return &Frame{
+				FrameID: frameID,
+				Data:    b,
+			}, nil
 		}
 		if err := c.Camera.ReleaseFrame(frameID); err != nil {
-			return nil, nil, fmt.Errorf("cannot release an allocated frame (%d): %w", frameID, err)
+			return nil, fmt.Errorf("cannot release an allocated frame (%d): %w", frameID, err)
 		}
 
 		time.Sleep(time.Duration(float64(time.Second) / c.FPS.Float64()))
 	}
 
-	return nil, nil, fmt.Errorf("internal error: we always get a zero-sized frame")
+	return nil, fmt.Errorf("internal error: we always get a zero-sized frame")
 }
 
-func (c *Camera) ReleaseRawFrames(frameID camera.FrameID) error {
-	return c.Camera.ReleaseFrame(uint32(frameID.(FrameID)))
+func (c *Camera) ReleaseFrames(frame camera.FramesData) error {
+	return c.Camera.ReleaseFrame(frame.(*Frame).FrameID)
 }
 
 func (c *Camera) WaitForFrame(ctx context.Context) error {

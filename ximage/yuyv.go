@@ -43,7 +43,7 @@ func (p *YUYV) sizes() (int, int) {
 }
 
 func (p *YUYV) SetBytes(b []byte) error {
-	// see https://www.kernel.org/doc/html/v4.10/media/uapi/v4l/pixfmt-nv12.html
+	// see https://www.kernel.org/doc/html/v4.10/media/uapi/v4l/pixfmt-yuyv.html
 	if err := p.SetY0CbY1CrBytes(b); err != nil {
 		return fmt.Errorf("unable to set the Y0CbY1Cr bytes: %w", err)
 	}
@@ -51,7 +51,7 @@ func (p *YUYV) SetBytes(b []byte) error {
 }
 
 func (p *YUYV) SetY0CbY1CrBytes(b []byte) error {
-	// see https://www.kernel.org/doc/html/v4.10/media/uapi/v4l/pixfmt-nv12.html
+	// see https://www.kernel.org/doc/html/v4.10/media/uapi/v4l/pixfmt-yuyv.html
 	_, bytesExpected := p.sizes()
 	if len(b) != bytesExpected {
 		return fmt.Errorf("the size the provided slice does not match the expected size: expected:%d, received:%d", bytesExpected, len(b))

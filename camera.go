@@ -10,6 +10,6 @@ type Camera interface {
 	StartStreaming() error
 	StopStreaming() error
 	GetFormat() Format
-	GetRawFrames(context.Context, []byte) (RawFrames, FrameID, error)
-	ReleaseRawFrames(FrameID) error
+	GetFrames(context.Context) (FramesData, error)
+	ReleaseFrames(FramesData) error
 }

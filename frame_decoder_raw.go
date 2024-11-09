@@ -8,8 +8,8 @@ import (
 )
 
 type frameDecoderRaw struct {
-	Format Format
-	Frame  []byte
+	Format    Format
+	FrameData FramesData
 }
 
 var _ FrameDecoder = (*frameDecoderRaw)(nil)
@@ -48,8 +48,8 @@ func (d *frameDecoderRaw) NewImage() image.Image {
 	}
 }
 
-func (d *frameDecoderRaw) WriteFrames(frame []byte) error {
-	d.Frame = frame
+func (d *frameDecoderRaw) WriteFrames(framesData FramesData) error {
+	d.FrameData = framesData
 	return nil
 }
 
@@ -61,8 +61,12 @@ func (d *frameDecoderRaw) DecodeFrame(
 			_err = fmt.Errorf("pixel format %v: %w", d.Format.PixelFormat, _err)
 			return
 		}
-		d.Frame = nil
+		d.FrameData = nil
 	}()
+	if frame, ok := d.FrameData.(Frame); ok {
+		return frame.Image(), nil
+	}
+
 	switch d.Format.PixelFormat {
 	case PixelFormatYUYV:
 		return d.decodeFrameYUYV(typeAssertOrZero[*ximage.YUYV](dstImg))
@@ -86,7 +90,7 @@ func (d *frameDecoderRaw) decodeFrameNV12(
 		})
 	}
 
-	if err := dstImg.SetBytes(d.Frame); err != nil {
+	if err := dstImg.SetBytes(d.FrameData.Bytes()); err != nil {
 		return nil, fmt.Errorf("unable to set bytes: %w", err)
 	}
 	return dstImg, nil
@@ -105,7 +109,7 @@ func (d *frameDecoderRaw) decodeFrameYUYV(
 		})
 	}
 
-	if err := dstImg.SetBytes(d.Frame); err != nil {
+	if err := dstImg.SetBytes(d.FrameData.Bytes()); err != nil {
 		return nil, fmt.Errorf("unable to set bytes: %w", err)
 	}
 	return dstImg, nil

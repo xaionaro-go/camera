@@ -33,8 +33,8 @@ func (d *frameDecoderMJPEG) NewImage() image.Image {
 	return nil
 }
 
-func (d *frameDecoderMJPEG) WriteFrames(frames []byte) error {
-	_, err := d.FrameWriter.Write(frames)
+func (d *frameDecoderMJPEG) WriteFrames(frames FramesData) error {
+	_, err := d.FrameWriter.Write(frames.Bytes())
 	return err
 }
 

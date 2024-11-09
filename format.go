@@ -11,8 +11,11 @@ const (
 	PixelFormatAuto      = PixelFormat("*")
 
 	PixelFormatMJPEG = PixelFormat("MJPG")
-	PixelFormatYUYV  = PixelFormat("YUYV")
-	PixelFormatNV12  = PixelFormat("NV12")
+
+	// Raw formats:
+	PixelFormatNV12 = PixelFormat("NV12") // https://www.kernel.org/doc/html/v4.10/media/uapi/v4l/pixfmt-nv12.html
+	PixelFormatYU12 = PixelFormat("YU12") // https://www.kernel.org/doc/html/v4.10/media/uapi/v4l/pixfmt-yuv420.html
+	PixelFormatYUYV = PixelFormat("YUYV") // https://www.kernel.org/doc/html/v4.10/media/uapi/v4l/pixfmt-yuyv.html
 )
 
 func PixelFormatByName(pixFmtName string) PixelFormat {

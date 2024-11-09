@@ -9,7 +9,7 @@ import (
 type FrameDecoder interface {
 	io.Closer
 	NewImage() image.Image
-	WriteFrames([]byte) error
+	WriteFrames(FramesData) error
 	DecodeFrame(image.Image) (image.Image, error)
 }
 

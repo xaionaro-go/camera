@@ -121,24 +121,24 @@ func main() {
 	defer cancelFn()
 
 	log.Printf("getting a frame")
-	frame, frameID, err := camera.GetRawFrames(frameReadCtx, nil)
+	frame, err := camera.GetFrames(frameReadCtx)
 	if err != nil {
 		panic(fmt.Errorf("unable to get a video frame: %w", err))
 	}
 
 	log.Printf("releasing the memory buffer of the frame")
-	err = camera.ReleaseRawFrames(frameID)
+	err = camera.ReleaseFrames(frame)
 	if err != nil {
-		panic(fmt.Errorf("unable to release frame %d: %w", frameID, err))
+		panic(fmt.Errorf("unable to release frame %d: %w", frame, err))
 	}
 
 	log.Printf("getting the second frame")
-	frame, frameID, err = camera.GetRawFrames(frameReadCtx, nil)
+	frame, err = camera.GetFrames(frameReadCtx)
 	if err != nil {
 		panic(fmt.Errorf("unable to get a video frame: %w", err))
 	}
 
-	log.Printf("decoding the frame (of size %d)", len(frame))
+	log.Printf("decoding the frame (of size %d)", len(frame.Bytes()))
 	err = frameDecoder.WriteFrames(frame)
 	if err != nil {
 		panic(fmt.Errorf("unable to write the frame into the decoder: %w", err))
@@ -150,9 +150,9 @@ func main() {
 	}
 
 	log.Printf("releasing the memory buffer of the frame")
-	err = camera.ReleaseRawFrames(frameID)
+	err = camera.ReleaseFrames(frame)
 	if err != nil {
-		panic(fmt.Errorf("unable to release frame %d: %w", frameID, err))
+		panic(fmt.Errorf("unable to release frame %d: %w", frame, err))
 	}
 
 	log.Printf("encoding the picture into PNG")
