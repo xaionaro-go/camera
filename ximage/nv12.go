@@ -33,6 +33,18 @@ func NewNV12(r image.Rectangle) *NV12 {
 	return p
 }
 
+func NewNV12NoAlloc(r image.Rectangle) *NV12 {
+	p := &NV12{
+		YStride: r.Max.X - r.Min.X,
+		Rect:    r,
+	}
+	_, bytesExpected := p.sizes()
+	if bytesExpected < 0 {
+		panic("ximage: Rectangle has huge or negative dimensions")
+	}
+	return p
+}
+
 func (p *NV12) sizes() (int, int) {
 	w := p.Rect.Max.X - p.Rect.Min.X
 	h := p.Rect.Max.Y - p.Rect.Min.Y

@@ -5,6 +5,7 @@ import (
 )
 
 type Compression string
+type CompressionQuality int64
 
 const (
 	CompressionUndefined = Compression("")
@@ -51,12 +52,10 @@ func PixelFormatFromUint32(v uint32) PixelFormat {
 }
 
 type Format struct {
-	Width            uint64
-	Height           uint64
-	PixelFormat      PixelFormat
-	FPS              Fraction
-	Compression      Compression
-	CompressionLevel int64
+	Width       uint64
+	Height      uint64
+	PixelFormat PixelFormat
+	FPS         Fraction
 }
 
 type Formats []Format

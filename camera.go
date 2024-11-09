@@ -5,11 +5,21 @@ import (
 	"io"
 )
 
-type Camera interface {
+type CameraCommon interface {
 	io.Closer
 	StartStreaming() error
 	StopStreaming() error
 	GetFormat() Format
-	GetFrames(context.Context) (FramesData, error)
-	ReleaseFrames(FramesData) error
+}
+
+type Camera interface {
+	CameraCommon
+	GetFrame(context.Context) (Frame, error)
+	ReleaseFrame(Frame) error
+}
+
+type CameraCompressed interface {
+	CameraCommon
+	GetCompressedFrames(context.Context) (FramesCompressed, error)
+	ReleaseFrames(FramesCompressed) error
 }

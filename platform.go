@@ -10,6 +10,13 @@ type Platform interface {
 		format Format,
 	) (Camera, error)
 
+	OpenCameraCompressed(
+		devicePath DevicePath,
+		format Format,
+		compression Compression,
+		compressionQuality CompressionQuality,
+	) (CameraCompressed, error)
+
 	ListFormats(
 		devicePath string,
 	) (Formats, error)

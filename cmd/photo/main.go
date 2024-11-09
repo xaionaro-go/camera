@@ -96,11 +96,6 @@ func main() {
 	}
 
 	format := formats.BestResolution()
-	frameDecoder, err := camera.NewFrameDecoder(format)
-	if err != nil {
-		panic(fmt.Errorf("unable to initialize a frame decoder: %w", err))
-	}
-	img := frameDecoder.NewImage()
 
 	log.Printf("requesting format %#+v", format)
 	camera, err := cameraSelector.OpenCamera(format)
@@ -121,42 +116,31 @@ func main() {
 	defer cancelFn()
 
 	log.Printf("getting a frame")
-	frame, err := camera.GetFrames(frameReadCtx)
+	frame, err := camera.GetFrame(frameReadCtx)
 	if err != nil {
 		panic(fmt.Errorf("unable to get a video frame: %w", err))
 	}
 
 	log.Printf("releasing the memory buffer of the frame")
-	err = camera.ReleaseFrames(frame)
+	err = camera.ReleaseFrame(frame)
 	if err != nil {
 		panic(fmt.Errorf("unable to release frame %d: %w", frame, err))
 	}
 
 	log.Printf("getting the second frame")
-	frame, err = camera.GetFrames(frameReadCtx)
+	frame, err = camera.GetFrame(frameReadCtx)
 	if err != nil {
 		panic(fmt.Errorf("unable to get a video frame: %w", err))
 	}
 
-	log.Printf("decoding the frame (of size %d)", len(frame.Bytes()))
-	err = frameDecoder.WriteFrames(frame)
-	if err != nil {
-		panic(fmt.Errorf("unable to write the frame into the decoder: %w", err))
-	}
-
-	img, err = frameDecoder.DecodeFrame(img)
-	if err != nil {
-		panic(fmt.Errorf("unable to decode the frame: %w", err))
-	}
-
 	log.Printf("releasing the memory buffer of the frame")
-	err = camera.ReleaseFrames(frame)
+	err = camera.ReleaseFrame(frame)
 	if err != nil {
 		panic(fmt.Errorf("unable to release frame %d: %w", frame, err))
 	}
 
 	log.Printf("encoding the picture into PNG")
-	err = png.Encode(os.Stdout, img)
+	err = png.Encode(os.Stdout, frame.Image())
 	if err != nil {
 		panic(fmt.Errorf("unable to encode the frame into the PNG file: %w", err))
 	}

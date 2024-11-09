@@ -66,6 +66,15 @@ func (Platform) ListFormats(
 	return result, nil
 }
 
+func (Platform) OpenCameraCompressed(
+	devicePath camera.DevicePath,
+	format camera.Format,
+	compression camera.Compression,
+	compressionQuality camera.CompressionQuality,
+) (camera.CameraCompressed, error) {
+	return nil, fmt.Errorf("not supported")
+}
+
 func (Platform) OpenCamera(
 	devicePath string,
 	format camera.Format,
@@ -90,10 +99,12 @@ func (Platform) OpenCamera(
 	}
 
 	return &Camera{
-		Camera:      webCam,
-		Width:       width,
-		Height:      height,
-		PixelFormat: pixFmt,
-		FPS:         format.FPS,
+		Camera: webCam,
+		Format: camera.Format{
+			Width:       uint64(width),
+			Height:      uint64(height),
+			PixelFormat: PixelFormatFromV4L2(pixFmt),
+			FPS:         format.FPS,
+		},
 	}, nil
 }
