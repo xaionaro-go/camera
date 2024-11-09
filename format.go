@@ -4,13 +4,21 @@ import (
 	"encoding/binary"
 )
 
+type Compression string
+
+const (
+	CompressionUndefined = Compression("")
+	CompressionAuto      = Compression("*")
+
+	CompressionMJPEG = Compression("MJPG")
+	CompressionHEIC  = Compression("HEIC")
+)
+
 type PixelFormat string
 
 const (
 	PixelFormatUndefined = PixelFormat("")
 	PixelFormatAuto      = PixelFormat("*")
-
-	PixelFormatMJPEG = PixelFormat("MJPG")
 
 	// Raw formats:
 	PixelFormatNV12 = PixelFormat("NV12") // https://www.kernel.org/doc/html/v4.10/media/uapi/v4l/pixfmt-nv12.html
@@ -36,15 +44,6 @@ func (pixFmt PixelFormat) rawBitSize() uint32 {
 	return 0
 }
 
-func (pixFmt PixelFormat) IsRaw() bool {
-	switch pixFmt {
-	case PixelFormatYUYV,
-		PixelFormatNV12:
-		return true
-	}
-	return false
-}
-
 func PixelFormatFromUint32(v uint32) PixelFormat {
 	var value [4]byte
 	binary.NativeEndian.PutUint32(value[:], v)
@@ -52,10 +51,12 @@ func PixelFormatFromUint32(v uint32) PixelFormat {
 }
 
 type Format struct {
-	Width       uint64
-	Height      uint64
-	PixelFormat PixelFormat
-	FPS         Fraction
+	Width            uint64
+	Height           uint64
+	PixelFormat      PixelFormat
+	FPS              Fraction
+	Compression      Compression
+	CompressionLevel int64
 }
 
 type Formats []Format

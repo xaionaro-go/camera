@@ -13,20 +13,26 @@ type FrameDecoder interface {
 	DecodeFrame(image.Image) (image.Image, error)
 }
 
-func NewFrameDecoder(format Format) (FrameDecoder, error) {
-	switch format.PixelFormat {
-	case PixelFormatMJPEG:
-		return newFrameDecoderMJPEG(format), nil
-	}
-
-	switch {
-	case format.PixelFormat.IsRaw():
-		decoder, err := newFrameDecoderRaw(format)
-		if err != nil {
-			return nil, fmt.Errorf("unable to initialize a decoder of raw frames: %w", err)
+func NewFrameDecoder(format Format) (_ FrameDecoder, _err error) {
+	defer func() {
+		if _err != nil {
+			_err = fmt.Errorf("unable to initialize a frame decoder for %s/%s: %w", format.Compression, format.PixelFormat, _err)
 		}
-		return decoder, nil
+	}()
+
+	switch format.Compression {
+	case CompressionMJPEG:
+		if format.PixelFormat != PixelFormatAuto {
+			return nil, fmt.Errorf("a pixel format cannot be forced, when MJPEG compression is used")
+		}
+		return newFrameDecoderMJPEG(format), nil
+	case CompressionHEIC:
+		return newFrameDecoderHEIC(format)
 	}
 
-	return nil, fmt.Errorf("the support of pixel format '%v' is not implemented, yet", format.PixelFormat)
+	decoder, err := newFrameDecoderRaw(format)
+	if err != nil {
+		return nil, fmt.Errorf("unable to initialize a decoder of raw frames: %w", err)
+	}
+	return decoder, nil
 }
