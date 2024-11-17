@@ -16,7 +16,7 @@ import (
 
 	"github.com/spf13/pflag"
 	"github.com/xaionaro-go/camera"
-	_ "github.com/xaionaro-go/camera/allplatforms"
+	"github.com/xaionaro-go/camera/allplatforms"
 )
 
 func main() {
@@ -32,6 +32,7 @@ func main() {
 	widthFlag := pflag.Uint64("width", 0, "")
 	fpsFlag := pflag.Float64("fps", math.NaN(), "")
 	pixFmtFlag := pflag.String("pixel-format", "", "")
+	platformFlag := pflag.String("platform", "", "")
 	deviceFlag := pflag.String("device", availableCameras[0].DevicePath, "")
 	pflag.Parse()
 
@@ -41,18 +42,40 @@ func main() {
 		}()
 	}
 
-	var cameraSelector camera.DevicePathAndPlatform
-	for _, c := range availableCameras {
-		if c.DevicePath == *deviceFlag {
-			cameraSelector = c
-			break
+	var plat camera.Platform
+	var devicePath camera.DevicePath
+	if *platformFlag != "" {
+		plat = allplatforms.Get(*platformFlag)
+		if plat == nil {
+			panic(fmt.Errorf("platform '%s' is unknown", *platformFlag))
+		}
+		availableCameras, err := plat.ListCameras()
+		if err != nil {
+			panic(fmt.Errorf("unable to list cameras: %w", err))
+		}
+		for _, c := range availableCameras {
+			if c == *deviceFlag {
+				devicePath = c
+				break
+			}
+		}
+		if devicePath == "" {
+			panic(fmt.Errorf("camera with path '%s' is not found (available: %#+v)", *deviceFlag, availableCameras))
+		}
+	} else {
+		var cameraSelector camera.DevicePathAndPlatform
+		for _, c := range availableCameras {
+			if c.DevicePath == *deviceFlag {
+				cameraSelector = c
+				break
+			}
+		}
+		if cameraSelector.Platform == nil {
+			panic(fmt.Errorf("camera with path '%s' is not found (available: %#+v)", *deviceFlag, availableCameras))
 		}
 	}
-	if cameraSelector.Platform == nil {
-		panic(fmt.Errorf("camera with path '%s' is not found (available: %#+v)", *deviceFlag, availableCameras))
-	}
 
-	formats, err := cameraSelector.ListFormats()
+	formats, err := plat.ListFormats(devicePath)
 	if err != nil {
 		panic(fmt.Errorf("unable to list the formats: %w", err))
 	}
@@ -98,7 +121,7 @@ func main() {
 	format := formats.BestResolution()
 
 	log.Printf("requesting format %#+v", format)
-	camera, err := cameraSelector.OpenCamera(format)
+	camera, err := plat.OpenCamera(devicePath, format)
 	if err != nil {
 		panic(fmt.Errorf("unable to open the camera: %w", err))
 	}
@@ -133,15 +156,15 @@ func main() {
 		panic(fmt.Errorf("unable to get a video frame: %w", err))
 	}
 
-	log.Printf("releasing the memory buffer of the frame")
-	err = camera.ReleaseFrame(frame)
-	if err != nil {
-		panic(fmt.Errorf("unable to release frame %d: %w", frame, err))
-	}
-
 	log.Printf("encoding the picture into PNG")
 	err = png.Encode(os.Stdout, frame.Image())
 	if err != nil {
 		panic(fmt.Errorf("unable to encode the frame into the PNG file: %w", err))
+	}
+
+	log.Printf("releasing the memory buffer of the frame")
+	err = camera.ReleaseFrame(frame)
+	if err != nil {
+		panic(fmt.Errorf("unable to release frame %d: %w", frame, err))
 	}
 }

@@ -1,0 +1,8 @@
+Website = "https://github.com/xaionaro-go/camera"
+
+[Details]
+  Icon = "assets/icon.png"
+  Name = "CameraView"
+  ID = "CameraView.dx.streampanel"
+  Version = "0.1.0"
+  Build = 14
